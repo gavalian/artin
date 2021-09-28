@@ -1,0 +1,2 @@
+# artin
+Artificial inteligence projects
