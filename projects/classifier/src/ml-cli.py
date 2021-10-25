@@ -80,7 +80,7 @@ def parse_arguments():
     return parser.parse_args()
 
 def enumerate_data_files_in_dir(dir_path):
-    return glob.glob('{dir_path}/*.txt')
+    return glob.glob(f'{dir_path}/*.txt')
 
 def read_input_data(input_type, args) -> dict:
     """
