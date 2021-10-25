@@ -18,11 +18,98 @@ Create a new Anaconda environment using the YML file provided:
 
 Execute `ml-cli.py` under `src/` with the necessary CLI arguments.
 
-To see the available CLI parameters execute `./ml-cli.py -h`
+## Primary Arguments
+```
+ml-cli.py [-h] {train,test,predict} ...
+```
+positional arguments:
+```
+{train,test,predict}
+train               Train a model, perform testing, and serialize it.
+test                Load a model for testing.
+predict             Load a model and use it for predictions.
+
+optional arguments:
+-h, --help            show this help message and exit 
+```
 
 The script makes use of subcommands. 
 
-To get help for the `train` subcommand for example, execute `./ml-cli.py train -h`.
+To get help for any subcommand, such as the `train` subcommand for example, execute `./ml-cli.py train -h`.
+
+## Train Subcommand Arguments
+```
+ml-cli.py train [-h] --training-file TRAINING_FILE_PATH --testing-file
+                       TESTING_FILE_PATH --num-features {6,36,4032}
+                       --out-model OUTPUT_MODEL_PATH --model-type {cnn,mlp,et}
+                       [--epochs TRAINING_EPOCHS]
+                       [--batchSize TRAINING_BATCH_SIZE]
+                       [--testing-batchSize EVALUATION_BATCH_SIZE]
+
+Required arguments:
+  --training-file TRAINING_FILE_PATH, -t TRAINING_FILE_PATH
+                        Path to the file containing the training data.
+  --testing-file TESTING_FILE_PATH, -e TESTING_FILE_PATH
+                        Path to the file containing the testing data.
+  --num-features {6,36,4032}, -f {6,36,4032}
+                        Path to the directory containing the testing data.
+  --out-model OUTPUT_MODEL_PATH, -m OUTPUT_MODEL_PATH
+                        Name of the file in which to save the model.
+  --model-type {cnn,mlp,et}
+                        The type of the model to train.
+
+Optional arguments:
+  --epochs TRAINING_EPOCHS
+                        How many training epochs to go through.
+  --batchSize TRAINING_BATCH_SIZE
+                        Size of the training batch.
+  --testing-batchSize EVALUATION_BATCH_SIZE
+                        Size of the evaluation batch.
+```
+
+## Test Subcommand Arguments
+```
+ml-cli.py test [-h] --testing-file TESTING_FILE_PATH --num-features
+                      {6,36,4032} --model MODEL_PATH --model-type {cnn,mlp,et}
+                      [--batchSize EVALUATION_BATCH_SIZE]
+
+Required arguments:
+  --testing-file TESTING_FILE_PATH, -e TESTING_FILE_PATH
+                        Path to the file containing the testing data.
+  --num-features {6,36,4032}, -f {6,36,4032}
+                        Path to the directory containing the testing data.
+  --model MODEL_PATH, -m MODEL_PATH
+                        The name of the file from which to load the model.
+  --model-type {cnn,mlp,et}
+                        The type of the model to load.
+
+Optional arguments:
+  --batchSize EVALUATION_BATCH_SIZE
+                        Size of the evaluation batch.
+```
+
+## Predict Subcommand Arguments
+```
+ml-cli.py predict [-h] --prediction-file PREDICTION_FILE_PATH --model
+                         MODEL_PATH --model-type {cnn,mlp,et}
+                         [--batchSize PREDICTION_BATCH_SIZE]
+                         [--c-lib C_LIBRARY] [--softmax]
+
+Required arguments:
+  --prediction-file PREDICTION_FILE_PATH, -p PREDICTION_FILE_PATH
+                        Path to the file containing the prediction data.
+  --model MODEL_PATH, -m MODEL_PATH
+                        The name of the file from which to load the model.
+  --model-type {cnn,mlp,et}
+                        The type of the model to load.
+
+Optional arguments:
+  --batchSize PREDICTION_BATCH_SIZE
+                        Size of the prediction batch.
+  --c-lib C_LIBRARY     Path to the C library reader interface
+  --softmax, -s         Use this flag to pass the output probabilities from
+                        softmax before returning them
+```
 
 # Background
 ## Problem
