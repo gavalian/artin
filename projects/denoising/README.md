@@ -2,6 +2,8 @@
 
 In this project, machine learning is used to denoise the data generated from drift chambers in the Jefferson Laboratory CLAS12 detector. The provided script can be used to train and test AutoEncoder models on "noisy" and "denoised" detector data. The resulting output can be used to more efficiently detect valid tracks in drift chambers.
 
+Paper publication of this work is available [here](https://www.sciencedirect.com/science/article/abs/pii/S0010465521003131)
+
 ## Requirements and Installation
 
 This software is developed in python 3 and requires the following libraries:
