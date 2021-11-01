@@ -5,6 +5,8 @@ Originally developed for CLAS12 Drift Chambers, it uses segment
 (cluster) positions in each of the 6 super-layers to form a track
 candidate and return the probability of it being a good track.
 
+Paper publication of this work is available [here](https://arxiv.org/abs/2008.12860).
+
 # Requirements
 * Anaconda (tested with Python 3.7)
 
