@@ -185,7 +185,7 @@ The model has correctly predicted the valid track of the 1st sample, but not for
 
 ### Possible Issue with Dataset
 
-In the dataset of 2019-10-1 we have at least one experiment that looks to be incorrectly labeled. The track can be seen on the picture on the right.
+In the dataset of 2019-10-1 we have at least one experiment that looks to be incorrectly labeled. The track can be seen on the picture below.
 
 ![Incorrect Label Track](https://crtc.cs.odu.edu/images/2/2e/Incorrect_label_track.png)
 
