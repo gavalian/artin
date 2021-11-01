@@ -126,9 +126,9 @@ be able to label track combinations as valid or not.
 
 ### Data
 
-The drift chambers consist of 6 layers, of 6 wires, of 112 sensors each for a total of 4032 sensors (see picture on the right). The data provided let us know whether a sensor
+The drift chambers consist of 6 layers, of 6 wires, of 112 sensors each for a total of 4032 sensors (see picture below). The data provided let us know whether a sensor
 has detected a hit or not. Those detections might be part of the trajectory that we want to track or can be irrelevant (noise). The labeled data consist of all the possible combinations that form a track as rows (events) and the state of each sensor (detected something or not) as columns (features). The label provides information on whether a combination produces the valid track or not.
-An example of the input to be used by the model can be found in [https://userweb.jlab.org/~gavalian/ML/data/dc/dc_training_svm.txt].
+An example of the input to be used by the model can be found in [https://userweb.jlab.org/~gavalian/ML/2021/Classifier].
 
 ![Drift Chambers](https://crtc.cs.odu.edu/images/b/bf/Drift_Chambers.png)
 
