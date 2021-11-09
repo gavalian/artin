@@ -200,7 +200,7 @@ The goal of this phase is to predict the track that the particle followed in the
 ![RNN ex 3210 labeled](https://crtc.cs.odu.edu/images/7/77/RNN_ex_3210_labeled.png)
 
 ### Data
-For this phase, only the valid tracks are taken into account. The input to the RNNs will be the first 24 values of each valid row (with label 1) in the 36cols/row format as data and the rest columns will be used as the prediction targets.
+For this phase, only the valid tracks are taken into account. The input to the RNNs will be the first 24 values of each valid row (with label 1) in the 36cols/row format as data and the remaining columns will be used as the prediction targets.
 
 For example, a dataset like this:
 
@@ -231,7 +231,7 @@ Will be converted to:
  1:43.00000 2:44.00000 3:43.00000 4:43.00000 5:43.00000 6:43.00000 7:43.00000 8:43.00000 9:43.00000 10:43.00000 11:43.00000 12:43.00000 ...
  1:25.00000 2:26.00000 3:25.00000 4:25.00000 5:25.00000 6:25.00000 7:25.00000 8:26.00000 9:25.00000 10:25.00000 11:24.00000 12:25.00000 ...
 
-The features, in this case, are the first 24 columns, while the prediction targets are the rest 12, e.g.:
+The features, in this case, are the first 24 columns, while the prediction targets are the remaining 12, e.g.:
 
 Training features:
 
