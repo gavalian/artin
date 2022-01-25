@@ -39,17 +39,17 @@
         </dependency>
 
 	<dependency>
-          <groupId>org.jlab.jnp</groupId>
-          <artifactId>jnp-hipo4</artifactId>
-          <version>4.1-SNAPSHOT</version>
+          <groupId>j4np</groupId>
+          <artifactId>j4np-data</artifactId>
+          <version>1.0.3</version>
 	</dependency>
       
     </dependencies>
 
     <repositories>
       <repository>
-        <id>jhep-maven</id>
-        <url>https://clasweb.jlab.org/jhep/maven</url>
+        <id>j4np-maven</id>
+        <url>https://clasweb.jlab.org/clas12maven/j4np/maven</url>
       </repository>
     </repositories>
     
@@ -69,6 +69,11 @@
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
+	    <archive>
+              <manifest>
+                <mainClass>org.crtcjlab.denoise2d.clas12.Clas12Denoiser</mainClass>
+              </manifest>
+            </archive>	    
           </configuration>
           <executions>
             <execution>

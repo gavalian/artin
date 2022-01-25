@@ -5,6 +5,11 @@
  */
 package org.crtcjlab.denoise2d.clas12;
 
+import j4np.hipo5.data.Bank;
+import j4np.hipo5.data.Event;
+import j4np.hipo5.io.HipoReader;
+import j4np.hipo5.io.HipoWriter;
+import j4np.utils.io.OptionParser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +18,6 @@ import java.util.logging.Logger;
 import org.crtcjlab.denoise2d.models.DenoisingAutoEncoder;
 import org.deeplearning4j.nn.modelimport.keras.exceptions.InvalidKerasConfigurationException;
 import org.deeplearning4j.nn.modelimport.keras.exceptions.UnsupportedKerasConfigurationException;
-import org.jlab.jnp.hipo4.data.Bank;
-import org.jlab.jnp.hipo4.data.Event;
-import org.jlab.jnp.hipo4.io.HipoReader;
-import org.jlab.jnp.hipo4.io.HipoWriter;
-import org.jlab.jnp.utils.options.OptionParser;
-import org.jlab.jnp.utils.options.OptionStore;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -240,7 +239,8 @@ public class Clas12Denoiser {
         Clas12Denoiser denoiser = Clas12Denoiser.withFile("models/cnn_autoenc_config.json","models/cnn_autoenc_weights.h5");
         if(recover.compareTo("true")==0){ denoiser.setHitRecovery(true);}
         
-        HipoWriter writer = new HipoWriter(reader.getSchemaFactory());        
+        HipoWriter writer = new HipoWriter();
+        writer.getSchemaFactory().copy(reader.getSchemaFactory());        
         writer.open(outputFile);
         
         int counter = 0;
@@ -251,11 +251,7 @@ public class Clas12Denoiser {
             event.read(dc);            
             List<INDArray> features = denoiser.getDataFeatures(dc);            
             List<INDArray> output = denoiser.getOutput(features, 0.05);            
-            /*System.out.println("----> event");
-            denoiser.show(features.get(0), 0.5);
-            System.out.println("----> after the fix");
-            denoiser.show(output.get(0), 0.5);
-            */
+           
             Bank dcnuevo = denoiser.reduce(dc, output);
             //System.out.printf("event (#%8d) DC TDC size = %4d , reduced = %4d\n",counter,dc.getRows(), dcnuevo.getRows());
             event.remove(dc.getSchema());
@@ -266,6 +262,6 @@ public class Clas12Denoiser {
             if(counter%100==0) denoiser.showStats();
             //System.out.printf("event (#%8d) DC TDC size = %4d , reduced = %4d\n",counter,dc.getRows(), dcnuevo.getRows());           
         }
-        writer.close();       
+        writer.close();    
     }
 }
