@@ -219,22 +219,32 @@ public class Clas12Denoiser {
         
         OptionParser parser = new OptionParser();
         parser.addOption("-r", "false", "turn on hit recovery");
+        parser.addOption("-skip", "0", "number of events to skip");
+        parser.addOption("-n", "-1", "number of events to process");
+        
         parser.addRequired("-o", "output file name");
         parser.parse(args);
         
-
-            
+        
         List<String> inputFiles = parser.getInputList();
         String          recover = parser.getOption("-r").stringValue();
         
         String file = inputFiles.get(0);
-        String outputFile = parser.getOption("-o").stringValue();
+        String  outputFile = parser.getOption("-o").stringValue();
+        int           skip = parser.getOption("-skip").intValue();
+        int        nevents = parser.getOption("-n").intValue();
         
         HipoReader reader = new HipoReader();
         reader.open(file);
         
         Bank dc = reader.getBank("DC::tdc");
         Event event = new Event();
+        
+        if(skip>0){
+            System.out.printf("*********** SKIPPING *** # %d\n",skip);
+            for(int i = 0; i < skip ; i++) reader.nextEvent(event);
+        }
+        
         
         Clas12Denoiser denoiser = Clas12Denoiser.withFile("models/cnn_autoenc_config.json","models/cnn_autoenc_weights.h5");
         if(recover.compareTo("true")==0){ denoiser.setHitRecovery(true);}
@@ -243,6 +253,8 @@ public class Clas12Denoiser {
         writer.getSchemaFactory().copy(reader.getSchemaFactory());        
         writer.open(outputFile);
         
+        
+
         int counter = 0;
         
         while(reader.hasNext()){
@@ -260,6 +272,7 @@ public class Clas12Denoiser {
             writer.addEvent(event);
             counter++;
             if(counter%100==0) denoiser.showStats();
+            if(nevents>0&&counter>=nevents) break;
             //System.out.printf("event (#%8d) DC TDC size = %4d , reduced = %4d\n",counter,dc.getRows(), dcnuevo.getRows());           
         }
         writer.close();    

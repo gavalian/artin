@@ -71,7 +71,7 @@
             </descriptorRefs>
 	    <archive>
               <manifest>
-                <mainClass>org.crtcjlab.denoise2d.clas12.Clas12Denoiser</mainClass>
+                <mainClass>org.crtcjlab.denoise2d.RunDenoise2d</mainClass>
               </manifest>
             </archive>	    
           </configuration>
