@@ -1,0 +1,29 @@
+<project name="crtc-jlab-etrees.ant" default="compile" basedir=".">
+    <description>
+        crtc-jlab-etrees build file
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src/main/"/>
+  <property name="build" location="build"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <delete dir="${build}"/>
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac source="1.8" target="1.8" 
+           srcdir="${src}" destdir="${build}" includeantruntime="false"/>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} directory tree -->
+    <delete dir="${build}"/>
+  </target>
+</project>
