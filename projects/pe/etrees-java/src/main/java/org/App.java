@@ -20,56 +20,95 @@ public class App {
     private static double[] all_neg_outputs;
     private static ExtraTrees pos_model;
     private static ExtraTrees neg_model;
+    
+    public static ExtraTrees train(double[] trainX, double[] trainY) {
+        
+        System.out.println("Training on " + trainX.length / 6 +" rows");
+        Pair data_train = prepare_nlabel_dataset(trainX, trainY, 3);
+        Matrix features_sec2_train_pos = new Matrix(data_train.input, data_train.input.length/6, 6);
+        
+        ExtraTrees model = new ExtraTrees(features_sec2_train_pos, trainY, data_train.tasks);
+        // // Train trees here
+        model.learnTrees(5, 4, 200);
+        
+        return model;
+    }
+    
+    public static double[] test(ExtraTrees mode, double[] testX, double[] testY) {
+
+        System.out.println("Testing on " + testX.length / 6 +" rows");
+        Pair data_test = prepare_nlabel_dataset(testX, testY, 3);
+        Matrix features_sec2_test = new Matrix(data_test.input, data_test.input.length/6, 6);
+
+        double[] yhat_val = pos_model.getValuesMT(features_sec2_test, data_test.tasks);
+
+        return yhat_val;
+    }
 
     public static void main(String[] args) throws Exception {
         String filepath = "../data/a_extract_regression_data_1n1p_tb.txt";
-
+        
         // Reads file and creates arrays for positive/negative charge for all and only sector 2 features 
         read(filepath);
-
+                
         TestTrainSet set_sec2_pos = create_train_test_set(sec2_pos_inputs, sec2_pos_outputs, 0.9);
-        Matrix features_sec2_train_pos = new Matrix(set_sec2_pos.trainX, set_sec2_pos.trainX.length/6, 6);
-        Matrix features_sec2_test_pos = new Matrix(set_sec2_pos.testX, set_sec2_pos.testX.length/6, 6);
-        
+        pos_model = train(set_sec2_pos.trainX, set_sec2_pos.trainY);
+        double[] yhat_pos_val = test(pos_model, set_sec2_pos.testX, set_sec2_pos.testY);
+        System.out.println("Test Positive model MAE: " + mae( set_sec2_pos.testY, yhat_pos_val));
+
         TestTrainSet set_sec2_neg = create_train_test_set(sec2_neg_inputs, sec2_neg_outputs, 0.9);
-        Matrix features_sec2_train_neg = new Matrix(set_sec2_neg.trainX, set_sec2_neg.trainX.length/6, 6);
-        Matrix features_sec2_test_neg = new Matrix(set_sec2_neg.testX, set_sec2_neg.testX.length/6, 6);
-
-
-        Matrix features_all_pos = new Matrix(all_pos_inputs, all_pos_inputs.length/6, 6);
-        Matrix features_all_neg = new Matrix(all_neg_inputs, all_neg_inputs.length/6, 6);
-
-        pos_model = new ExtraTrees(features_sec2_train_pos, set_sec2_pos.trainY);
-        // Train tress here
-        pos_model.learnTrees(5, 4, 200);
-        double[] yhat_pos_val = pos_model.getValues(features_sec2_test_pos);
-        System.out.println("Positive model MAE: " + mae( set_sec2_pos.testY, yhat_pos_val));
+        neg_model = train(set_sec2_neg.trainX, set_sec2_neg.trainY);
+        double[] yhat_neg_val = test(neg_model, set_sec2_neg.testX, set_sec2_neg.testY);
+        System.out.println("Test Negative model MAE: " + mae( set_sec2_neg.testY, yhat_neg_val));
         
-        double[] yhat_pos_all = pos_model.getValues(features_all_pos);
+        double[] yhat_pos_all = test(pos_model, all_pos_inputs, all_pos_outputs);
+        System.out.println("Eval Positive model MAE: " + mae( all_pos_outputs, yhat_pos_all));
         
-        neg_model = new ExtraTrees(features_sec2_train_neg, set_sec2_neg.trainY);
-        // Train tress here
-        neg_model.learnTrees(5, 4, 200);
-        double[] yhat_neg_val = neg_model.getValues(features_sec2_test_neg);
-        System.out.println("Negative model MAE: " + mae( set_sec2_neg.testY, yhat_neg_val));
-
-        double[] yhat_neg_all = neg_model.getValues(features_all_neg);
-
-
+        double[] yhat_neg_all = test(neg_model, all_neg_inputs, all_neg_outputs);
+        System.out.println("Eval Negative model MAE: " + mae( all_neg_outputs, yhat_neg_all));
         BufferedReader br=new BufferedReader(new FileReader(new File(filepath)));
 
         File output = new File(filepath+".out");
         BufferedWriter bw = new BufferedWriter(new FileWriter(output));
         
         
-        for(int i = 0; i < yhat_pos_all.length; i++)
+        for(int i = 0; i < yhat_pos_all.length/3; i++)
         {
-            bw.write(br.readLine()+":"+ all_neg_outputs[i]+","+yhat_neg_all[i]+"\n");
-            bw.write(br.readLine()+":"+ all_pos_outputs[i]+","+yhat_pos_all[i]+"\n");
+            bw.write(br.readLine());
+            for(int j = 0; j < 3; j++) {
+                bw.write(" "+yhat_neg_all[i*3 + j]);
+            }
+            bw.write("\n");
+
+            bw.write(br.readLine());
+            for(int j = 0; j < 3; j++) {
+                bw.write(" "+yhat_pos_all[i*3 + j]);
+            }
+            bw.write("\n");
         }
         
         bw.close();
     }
+
+    public static Pair prepare_nlabel_dataset(double[] input, double[] output, int n_labels) {
+
+        int num_rows = output.length / n_labels;
+        int num_features_per_row = input.length / num_rows;
+        double [] adjusted_input = new double[input.length * n_labels];
+        int tasks[] = new int[output.length];
+        for(int i = 0; i < num_rows; i++) {
+            for(int j = 0; j < n_labels; j++) {
+                for(int k = 0; k < num_features_per_row; k++) {
+                    adjusted_input[i*num_features_per_row*n_labels + j*num_features_per_row + k ] = input[i*num_features_per_row + k];
+                }
+                tasks[i*n_labels + j] = j;
+            }
+        }
+
+        return new Pair(adjusted_input, tasks);
+    }
+
+
 
     public static void read(String filepath) {
         ArrayList<Double> features_pos = new ArrayList<Double>();
@@ -89,7 +128,6 @@ public class App {
             // System.out.println("File contents");
             String line;
             while((line = br.readLine()) != null) {
-                // System.out.println(line);
                 String [] res = line.split(":");
                 String [] first_part = res[0].strip().split("[\\s]+");
                 int sector = Integer.parseInt(first_part[0]);
@@ -97,47 +135,21 @@ public class App {
                 String [] outputs = res[1].strip().split("[\\s]+");
                 String [] res2 = line.split("==>");
                 String [] outs = res2[1].strip().split("[\\s]+");
-                // System.out.println(outs[0]);
-                // System.out.println("Outputs size: "+outputs.length);
-                // for(String v: outputs) {
-                //     System.out.println(v);
-                // }
-                // System.out.println("Outs size: "+outs.length);
                 if(charge == 1) {
                     if(sector == 2) {
-                        labels_pos_sec2.add(Double.parseDouble(outputs[0]));
-                        features_pos_sec2.add(Double.parseDouble(outs[0]));
-                        features_pos_sec2.add(Double.parseDouble(outs[1]));
-                        features_pos_sec2.add(Double.parseDouble(outs[2]));
-                        features_pos_sec2.add(Double.parseDouble(outs[3]));
-                        features_pos_sec2.add(Double.parseDouble(outs[4]));
-                        features_pos_sec2.add(Double.parseDouble(outs[5]));
+                        java.util.Collections.addAll(labels_pos_sec2, dstring_to_darray(outputs, 3));
+                        java.util.Collections.addAll(features_pos_sec2, dstring_to_darray(outs, 6));
                     }
-                    labels_pos.add(Double.parseDouble(outputs[0]));
-                    features_pos.add(Double.parseDouble(outs[0]));
-                    features_pos.add(Double.parseDouble(outs[1]));
-                    features_pos.add(Double.parseDouble(outs[2]));
-                    features_pos.add(Double.parseDouble(outs[3]));
-                    features_pos.add(Double.parseDouble(outs[4]));
-                    features_pos.add(Double.parseDouble(outs[5]));
+                    java.util.Collections.addAll(labels_pos, dstring_to_darray(outputs, 3));
+                    java.util.Collections.addAll(features_pos, dstring_to_darray(outs, 6));
                 }
                 else {
                     if(sector == 2) {
-                        labels_neg_sec2.add(Double.parseDouble(outputs[0]));
-                        features_neg_sec2.add(Double.parseDouble(outs[0]));
-                        features_neg_sec2.add(Double.parseDouble(outs[1]));
-                        features_neg_sec2.add(Double.parseDouble(outs[2]));
-                        features_neg_sec2.add(Double.parseDouble(outs[3]));
-                        features_neg_sec2.add(Double.parseDouble(outs[4]));
-                        features_neg_sec2.add(Double.parseDouble(outs[5]));
+                        java.util.Collections.addAll(labels_neg_sec2, dstring_to_darray(outputs, 3));
+                        java.util.Collections.addAll(features_neg_sec2, dstring_to_darray(outs, 6));
                     }
-                    labels_neg.add(Double.parseDouble(outputs[0]));
-                    features_neg.add(Double.parseDouble(outs[0]));
-                    features_neg.add(Double.parseDouble(outs[1]));
-                    features_neg.add(Double.parseDouble(outs[2]));
-                    features_neg.add(Double.parseDouble(outs[3]));
-                    features_neg.add(Double.parseDouble(outs[4]));
-                    features_neg.add(Double.parseDouble(outs[5]));
+                    java.util.Collections.addAll(labels_neg, dstring_to_darray(outputs, 3));
+                    java.util.Collections.addAll(features_neg, dstring_to_darray(outs, 6));
                 }
             }
             br.close();
@@ -146,47 +158,15 @@ public class App {
             e.printStackTrace();
         }
 
-        all_pos_inputs = new double[features_pos.size()];
-        all_neg_inputs = new double[features_neg.size()];
-        all_pos_outputs = new double[labels_pos.size()];
-        all_neg_outputs = new double[labels_neg.size()];
+        all_pos_inputs = alist_to_a(features_pos);
+        all_neg_inputs = alist_to_a(features_neg);
+        all_pos_outputs = alist_to_a(labels_pos);
+        all_neg_outputs = alist_to_a(labels_neg);
 
-        sec2_pos_inputs = new double[features_pos_sec2.size()];
-        sec2_pos_outputs = new double[labels_pos_sec2.size()];
-        sec2_neg_inputs = new double[features_neg_sec2.size()];
-        sec2_neg_outputs = new double[labels_neg_sec2.size()];
-
-        for(int i = 0; i < all_pos_inputs.length; i++) {
-            all_pos_inputs[i] = features_pos.get(i);
-        }
-
-        for(int i = 0; i < all_neg_inputs.length; i++) {
-            all_neg_inputs[i] = features_neg.get(i);
-        }
-
-        for(int i = 0; i < all_pos_outputs.length; i++) {
-            all_pos_outputs[i] = labels_pos.get(i);
-        }
-
-        for(int i = 0; i < all_neg_outputs.length; i++) {
-            all_neg_outputs[i] = labels_neg.get(i);
-        }
-
-        for(int i = 0; i < sec2_pos_inputs.length; i++) {
-            sec2_pos_inputs[i] = features_pos_sec2.get(i);
-        }
-
-        for(int i = 0; i < sec2_neg_inputs.length; i++) {
-            sec2_neg_inputs[i] = features_neg_sec2.get(i);
-        }
-
-        for(int i = 0; i < sec2_pos_outputs.length; i++) {
-            sec2_pos_outputs[i] = labels_pos_sec2.get(i);
-        }
-
-        for(int i = 0; i < sec2_neg_outputs.length; i++) {
-            sec2_neg_outputs[i] = labels_neg_sec2.get(i);
-        }
+        sec2_pos_inputs = alist_to_a(features_pos_sec2);
+        sec2_pos_outputs = alist_to_a(labels_pos_sec2);
+        sec2_neg_inputs = alist_to_a(features_neg_sec2);
+        sec2_neg_outputs = alist_to_a(labels_neg_sec2);
     }
 
     public static TestTrainSet create_train_test_set(double[] input, double [] output, double ratio) {
@@ -194,10 +174,10 @@ public class App {
         int trainLength = (int) ((input.length / 6) * ratio) ;
         int testLength = (input.length / 6) - trainLength;
         double[] trainX = new double[6 * trainLength];
-        double[] trainY = new double[(input.length / 6) - testLength];
+        double[] trainY = new double[((input.length / 6) - testLength) * 3];
         
         double[] testX = new double[6 * testLength];
-        double[] testY = new double[testLength];
+        double[] testY = new double[3 * testLength];
 
         for(int i = 0; i < trainLength * 6; i+= 6) {
             for(int j = 0; j < 6; j++) {
@@ -205,10 +185,10 @@ public class App {
             }
         }
 
-        for(int i = 0; i < trainLength; i++) {
-            // for(int j = 0; j < 6; j++) {
-                trainY[i] = output[i];
-            // }
+        for(int i = 0; i < trainLength * 3; i+=3) {
+            for(int j = 0; j < 3; j++) {
+                trainY[i + j] = output[i + j];
+            }
         }
 
         for(int i = trainLength * 6; i < trainLength * 6 + testLength * 6; i+= 6) {
@@ -217,10 +197,10 @@ public class App {
             }
         }
 
-        for(int i = trainLength; i < trainLength + testLength; i++) {
-            // for(int j = 0; j < 6; j++) {
-                testY[i - trainLength] = output[i];
-            // }
+        for(int i = trainLength * 3; i < trainLength * 3 + testLength * 3; i+=3) {
+            for(int j = 0; j < 3; j++) {
+                testY[i - trainLength * 3 + j] = output[i + j];
+            }
         }
 
         return new TestTrainSet(trainX, trainY, testX, testY);
@@ -241,6 +221,26 @@ public class App {
         return error/ y.length;
     }
 
+    public static double[] alist_to_a(ArrayList<Double> arraylist) {
+        double [] array = new double[arraylist.size()];
+
+        for(int i = 0; i < array.length; i++) {
+            array[i] = arraylist.get(i);
+        }
+
+        return array;
+    }
+
+    public static Double[] dstring_to_darray(String[] sa, int num_values) {
+        Double[] res = new Double[num_values];
+        for(int i = 0; i < num_values; i++) {
+            res[i] = Double.parseDouble(sa[i]);
+        }
+
+        return res;
+    }
+
+    
 
 
 }
