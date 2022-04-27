@@ -23,7 +23,6 @@ public class pe {
         String parsedCommand = jc.getParsedCommand();
         if(parsedCommand == null)
         {
-            System.out.println(args[0]);
             jc.usage();
         }
         else if(parsedCommand.equals("eval")) {
