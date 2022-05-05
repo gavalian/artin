@@ -13,7 +13,7 @@ matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import numpy as np
 import histogram as hm
-
+FLAT_NUM_FEATURES = 12504
 
 def main():
     args = parse_arguments()
@@ -134,8 +134,8 @@ def read_input_data(input_type, args) -> dict:
 
     if input_type == "train":
         # Read training and testing data
-        X_train, y_train, train_tracks_per_event = read_svm_to_X_Y_datasets(args.training_file_path, 4032)
-        X_test, y_test, test_tracks_per_event = read_svm_to_X_Y_datasets(args.testing_file_path, 4032)
+        X_train, y_train, train_tracks_per_event = read_svm_to_X_Y_datasets(args.training_file_path, FLAT_NUM_FEATURES)
+        X_test, y_test, test_tracks_per_event = read_svm_to_X_Y_datasets(args.testing_file_path, FLAT_NUM_FEATURES)
 
         return {
             "training": {"data": X_train, "labels": y_train, "tracks_per_event": train_tracks_per_event ,"epochs": args.epochs, "batch_size": args.batch_size},
@@ -145,7 +145,7 @@ def read_input_data(input_type, args) -> dict:
 
     elif input_type == "test":
         # Read testing data
-        X_test, y_test, test_tracks_per_event = read_svm_to_X_Y_datasets(args.testing_file_path, 4032)
+        X_test, y_test, test_tracks_per_event = read_svm_to_X_Y_datasets(args.testing_file_path, FLAT_NUM_FEATURES)
 
         return {
             "testing": {"data": X_test, "labels": y_test, "tracks_per_event": test_tracks_per_event , "batch_size": args.batch_size, "threshold": args.threshold},
@@ -153,7 +153,7 @@ def read_input_data(input_type, args) -> dict:
         }
 
     elif input_type == "predict":
-        X_test, y_test, predict_tracks_per_event = read_svm_to_X_Y_datasets(args.prediction_file_path, 4032)
+        X_test, y_test, predict_tracks_per_event = read_svm_to_X_Y_datasets(args.prediction_file_path, FLAT_NUM_FEATURES)
 
         return {
             "prediction": {"data": X_test, "labels": y_test, "threshold": args.threshold},
@@ -295,7 +295,7 @@ def predict(args):
     raw = input_dict["prediction"]["data"]
     clean = input_dict["prediction"]["labels"]
 
-    write_raw_clean_denoised_to_svm(results_dir+"prediction.lsvm", raw, clean, denoised, 4032)
+    write_raw_clean_denoised_to_svm(results_dir+"prediction.lsvm", raw, clean, denoised, FLAT_NUM_FEATURES)
 
     # predict_metrics["input_data"] = input_dict["prediction"]["data"]
     # predict_metrics["num_planes"] = input_dict["configuration"]["total_planes"]

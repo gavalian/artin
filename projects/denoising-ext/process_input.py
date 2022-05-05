@@ -49,8 +49,8 @@ def read_svm_to_X_Y_datasets(filename, num_features):
         else:
             invalid.append(array)
 
-    valid = np.array(np.vstack(valid)).reshape(-1, 36, 112, 1)
-    invalid = np.array(np.vstack(invalid)).reshape(-1, 36, 112, 1)
+    valid = np.array(np.vstack(valid)).reshape(-1, 84, 256, 1)
+    invalid = np.array(np.vstack(invalid)).reshape(-1, 84, 256, 1)
 
     return invalid, valid, tracks_per_event
 
