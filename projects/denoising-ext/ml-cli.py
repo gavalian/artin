@@ -13,7 +13,7 @@ matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import numpy as np
 import histogram as hm
-FLAT_NUM_FEATURES = 12504
+FLAT_NUM_FEATURES = 21504
 
 def main():
     args = parse_arguments()
@@ -135,6 +135,8 @@ def read_input_data(input_type, args) -> dict:
     if input_type == "train":
         # Read training and testing data
         X_train, y_train, train_tracks_per_event = read_svm_to_X_Y_datasets(args.training_file_path, FLAT_NUM_FEATURES)
+        print(X_train.shape)
+        print(y_train.shape)
         X_test, y_test, test_tracks_per_event = read_svm_to_X_Y_datasets(args.testing_file_path, FLAT_NUM_FEATURES)
 
         return {
@@ -347,16 +349,16 @@ def plot_accuracy_histogram(testing_metrics):
     hits_stats = hm.plot_hits(results_dir+'hits_histogram.png', predictions, ground_truth, results_dir, threshold)
     noise_stats = hm.plot_noise(results_dir+'noise_histogram.png', predictions, ground_truth, results_dir, threshold)
     noise_reduction_stats = hm.plot_noise_reduction(results_dir+'noise_reduction_histogram.png', predictions, raw_input, ground_truth, results_dir, threshold)
-    hits_per_segment = hm.plot_hits_per_segment(results_dir+'hits_per_segment.png', predictions, ground_truth, testing_metrics["tracks_per_sample"], threshold)
+    # hits_per_segment = hm.plot_hits_per_segment(results_dir+'hits_per_segment.png', predictions, ground_truth, testing_metrics["tracks_per_sample"], threshold)
     
     
-    cases = hits_per_segment["num"]
+    # cases = hits_per_segment["num"]
     hits_max = hits_stats["max"]
     hits_min = hits_stats["min"]
     hits_mean = hits_stats["mean"]
     hits_rms = hits_stats["rms"]
 
-    print(f'{colored("Total number of tracks:", "blue")} {int(cases)}')
+    # print(f'{colored("Total number of tracks:", "blue")} {int(cases)}')
     print(f'{colored("Hits Minimum value(%):", "blue")} {hits_min}')
     print(f'{colored("Hits Maximum value(%)::", "blue")} {hits_max}')
     print(f'{colored("Hits Mean value(%)::", "blue")} {hits_mean}')
@@ -393,9 +395,9 @@ def plot_accuracy_histogram(testing_metrics):
     print(f'{colored("rec_noise_mean(%)::", "blue")} {rec_noise_mean}')
     print(f'{colored("rec_noise_rms(%)::", "blue")} {rec_noise_rms}')
 
-    reconstruct_6_super_layers = hits_per_segment["valid-6"]
-    reconstruct_5_super_layers = hits_per_segment["valid-5"]
-    reconstruct_4_super_layers = hits_per_segment["valid-4"]
+    # reconstruct_6_super_layers = hits_per_segment["valid-6"]
+    # reconstruct_5_super_layers = hits_per_segment["valid-5"]
+    # reconstruct_4_super_layers = hits_per_segment["valid-4"]
 
     # print(f'{colored('Reconstructed from 6 superlayers(%): ',"blue")}  {(reconstruct_6_super_layers / cases) * 100)}' )
     # print(f'{colored('Reconstructed from 5 superlayers(%): ',"blue")}  {(reconstruct_5_super_layers / cases) * 100)}' )
@@ -403,7 +405,7 @@ def plot_accuracy_histogram(testing_metrics):
 
 
     with open(results_dir + 'testing_report.txt','a+') as f:
-        f.write('Total number of cases: '+ str(cases) + '\n')
+        # f.write('Total number of cases: '+ str(cases) + '\n')
         f.write('Hits Minimum value(%): ' + str(hits_min) + '\n')
         f.write('Hits Maximum value(%): ' + str(hits_max) + '\n')
         f.write('Hits Mean value(%): ' + str(hits_mean) + '\n')
@@ -417,13 +419,13 @@ def plot_accuracy_histogram(testing_metrics):
         f.write('Noise Reduction Mean value(%): ' + str(noise_reduction_mean) + '\n')
         f.write('Noise Reduction RMS value(%): ' + str(noise_reduction_rms) + '\n')
 
-        f.write('Reconstructed from 6 superlayers: ' + str(reconstruct_6_super_layers) + '\n')
-        f.write('Reconstructed from 5 superlayers: ' + str(reconstruct_5_super_layers) + '\n')
-        f.write('Reconstructed from 4 superlayers: ' + str(reconstruct_4_super_layers) + '\n')
+        # f.write('Reconstructed from 6 superlayers: ' + str(reconstruct_6_super_layers) + '\n')
+        # f.write('Reconstructed from 5 superlayers: ' + str(reconstruct_5_super_layers) + '\n')
+        # f.write('Reconstructed from 4 superlayers: ' + str(reconstruct_4_super_layers) + '\n')
 
-        f.write('Reconstructed from 6 superlayers(%): ' + str((reconstruct_6_super_layers / cases) * 100) + '\n')
-        f.write('Reconstructed from 5 superlayers(%): ' + str((reconstruct_5_super_layers / cases) * 100) + '\n')
-        f.write('Reconstructed from 4 superlayers(%): ' + str((reconstruct_4_super_layers / cases) * 100) + '\n')
+        # f.write('Reconstructed from 6 superlayers(%): ' + str((reconstruct_6_super_layers / cases) * 100) + '\n')
+        # f.write('Reconstructed from 5 superlayers(%): ' + str((reconstruct_5_super_layers / cases) * 100) + '\n')
+        # f.write('Reconstructed from 4 superlayers(%): ' + str((reconstruct_4_super_layers / cases) * 100) + '\n')
 
         f.write('init_noise_mean(%): ' + str(init_noise_mean) + '\n')
         f.write('init_noise_rms(%): ' + str(init_noise_rms) + '\n')
