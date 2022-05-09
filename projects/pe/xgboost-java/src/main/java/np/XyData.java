@@ -1,6 +1,7 @@
 package np;
 
 public class XyData {
+    
     private float[] mFeatures, mLabels;
     private int mFeaturesPerRow, mLabelsPerRow;
 

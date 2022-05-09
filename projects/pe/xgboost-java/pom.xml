@@ -57,8 +57,8 @@
             </descriptorRefs>
 	    <archive>
               <manifest>
-                <mainClass>j4ml.clas12.classifier.ClassifierDataExtract</mainClass>
-              </manifest>              
+                <mainClass>np.xgboost.ParticleEvaluation</mainClass>
+              </manifest>
             </archive>
           </configuration>
           <executions>
