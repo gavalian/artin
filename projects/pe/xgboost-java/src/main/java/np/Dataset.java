@@ -7,6 +7,7 @@ public class Dataset {
     private float [] mFeatures;
     private float [] mLabels;
     private float [] mSectors, mCharges;
+    private ArrayList<String> mInput;
     private static final int NUM_FEATURES = 6;
     private static final int NUM_OUTPUTS = 3;
 
@@ -16,8 +17,10 @@ public class Dataset {
         
         String line;
         ArrayList<Float[]> feats = new ArrayList<>();
+        mInput = new ArrayList<>();
         while((line = br.readLine()) != null)
         {
+            mInput.add(line);
             feats.add(parseLine(line));
         }
         mFeatures = new float[feats.size() * NUM_FEATURES];
@@ -87,11 +90,14 @@ public class Dataset {
                 indices.add(i);
             }
         }
+        ArrayList<String> filteredInput = new ArrayList<>();
+
 
         float retFeatures[] = new float[indices.size() * NUM_FEATURES];
         float retLabeles[] = new float[indices.size() * NUM_OUTPUTS];
         int curr_idx = 0;
         for(int idx: indices) {
+            filteredInput.add(mInput.get(idx));
             for(int i = 0; i < NUM_FEATURES; i++) {
                 retFeatures[curr_idx * NUM_FEATURES + i] = mFeatures[idx * NUM_FEATURES + i];
             }
@@ -101,7 +107,12 @@ public class Dataset {
             curr_idx++;
         }
 
+        mInput = filteredInput;
         return new XyData(retFeatures, NUM_FEATURES, retLabeles, NUM_OUTPUTS);
+    }
+
+    public ArrayList<String> getInput() {
+        return mInput;
     }
 
 }
