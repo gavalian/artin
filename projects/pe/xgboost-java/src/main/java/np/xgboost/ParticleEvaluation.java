@@ -8,7 +8,7 @@ import np.ArgParsing;
 import com.beust.jcommander.JCommander;
 import java.io.*;
 
-public class pe {
+public class ParticleEvaluation {
     public static void main(String[] args) throws Exception {
         ArgParsing a = new ArgParsing();
         CommandEval eval = a. new CommandEval();
