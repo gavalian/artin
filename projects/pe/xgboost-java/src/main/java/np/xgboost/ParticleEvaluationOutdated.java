@@ -7,9 +7,8 @@ import np.ArgParsing.*;
 import np.ArgParsing;
 import com.beust.jcommander.JCommander;
 import java.io.*;
-import java.util.ArrayList;
 
-public class pe {
+public class ParticleEvaluationOutdated {
     public static void main(String[] args) throws Exception {
         ArgParsing a = new ArgParsing();
         CommandEval eval = a. new CommandEval();
@@ -46,9 +45,7 @@ public class pe {
             File output = new File(resFilePath);
             BufferedWriter bw = new BufferedWriter(new FileWriter(output));
 
-            ArrayList<String> in = npdata.getInput();
             for(int i = 0; i < res.length; i++) {
-                bw.write(in.get(i));
                 for(int j = 0; j < res[i].length; j++) {
                     bw.write(""+res[i][j] + " ");
                 }
