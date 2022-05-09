@@ -30,6 +30,7 @@ public class ParticleEvaluation {
             
             String inputFilePath = eval.evalSet;
             String resFilePath = eval.pathResults;
+            String loadPath = eval.pathLoad;
 
             
             Dataset npdata = new Dataset(inputFilePath);
@@ -40,7 +41,7 @@ public class ParticleEvaluation {
             System.out.println("EvalSet: "+inputFilePath+", ResultsPath: " + resFilePath+", Filter C: " + eval.charge +", S: "+ eval.sector +", ModelPath: " + eval.pathLoad);
             Model m = new Model(3);
             // m.train(filteredData, filteredData);
-            m.load("savedModel.ml");
+            m.load(loadPath);
             float[][] res = m.predict(filteredData);
 
             File output = new File(resFilePath);
