@@ -84,7 +84,7 @@ class MlpModel():
         y_train = y3_data_Normalized
 
         start = timer()
-        self.model.fit(X_train, y_train, epochs=20, batch_size=64, validation_split = 0.1)
+        self.model.fit(X_train, y_train, epochs=1500, batch_size=64, validation_split = 0.1)
         end = timer()
         training_time = end - start
 
