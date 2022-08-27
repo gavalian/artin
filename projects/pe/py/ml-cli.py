@@ -15,7 +15,7 @@ from data import *
 
 from models.ExtraTreesModel import ExtraTreesModel
 from models.XGBoostModel import XGBoostModel
-# from models.MlpModel import MlpModel
+from models.MlpModel import MlpModel
 
 ## Script entry point
 def main():
@@ -48,6 +48,7 @@ def parse_arguments():
     parser_train_required_args.add_argument("--sector-values", "-s", required=True,  help="Comma separated values of sectors to use for training.", dest="sectors_train")
     parser_train_required_args.add_argument("--out-model", "-m", required=True, help="Name of the file in which to save the model.", dest="output_model_path")
     parser_train_required_args.add_argument("--model-type", choices=["et", "mlp", "xgb"], required=True, help="The type of the model to train.", dest="model_type")
+    parser_train_optional_args.add_argument("--activation-functions", "-af", required=False, type=str, default="tanh,linear", help="Main activation function used for all hidden layers and output activation function, comma-separated; supports all activation functions available in Tensorflow Keras API", dest="activation_functions")
     
     # TODO replace with --model-config
     # parser_train_optional_args.add_argument("--epochs", required=False, type=int, default="10", help="How many training epochs to go through.", dest="training_epochs")
@@ -186,12 +187,19 @@ def train_model(args):
         model = ExtraTreesModel()
     elif args.model_type == "xgb":
         model = XGBoostModel()
-    #     elif (args.model_type == "mlp"):
-    #         model = MlpModel()
+    elif (args.model_type == "mlp"):
+        model = MlpModel()
     #     elif (args.model_type == "cnn"):
     #         model = CnnModel(input_dict)
 
-    model.build_new_model()
+    if (args.model_type == "mlp"):
+        afs = [str(n) for n in args.activation_functions.split(',')]
+        af1 = afs[0]
+        af2 = afs[1]
+        model.build_new_model(af1, af2)
+    else:
+        model.build_new_model()
+
     training_dict = model.train(input_dict)
     print_training_report(training_dict)
 
@@ -225,8 +233,8 @@ def test_model(args):
         model = ExtraTreesModel()
     elif (args.model_type == "xgb"):
         model = XGBoostModel()
-    # elif (args.model_type == "mlp"):
-    #     model = MlpModel()
+    elif (args.model_type == "mlp"):
+        model = MlpModel()
     
     model.load_model(args.model_path)
 
