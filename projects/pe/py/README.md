@@ -18,6 +18,10 @@ conda env create -f conda_environment.yml
 
 **Make sure to activate the conda environment.**
 
+``` 
+conda activate ml 
+```
+
 Execute ``` ml-cli.py ``` with the necessary command-line arguments (presented below).
 
 ## Primary Arguments
